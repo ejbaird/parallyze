@@ -1,0 +1,11 @@
+Old analysis runs
+
+
+### Copied on 2017_02_08
+REF_GENOME      REL606_Vers4_CDS.gbk
+
+GENOMEDIFF_FILES
+annotate.gd
+
+
+
