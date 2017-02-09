@@ -116,12 +116,12 @@ def simulationEJB(conf, args):  # old proc2
     '''number of lines mutating in this particular gene'''
     out_fn = fileName(args)
     # snp_total = BasicSNPCount(conf)  # just return the # of dN in genes.
-    # print snp_total
+    # print(snp_total)
     snp_totalEJB, snp_type_counts = snpcount(genomediffs, lines, snp_types)
 
 def proc3(conf, args):
 
-    print "IN PROC 3"
+    print("IN PROC 3")
     aln, col_annotation = SNPsToAlignment(conf)
 
     ## This line calls RAxML to estimate the phylogeny.
@@ -155,15 +155,15 @@ def dNdS(conf, args):  # old proc4
     genomediffs = {}
     for gd_file in conf.GENOMEDIFF_FILES:
         parse_genomediff(gd_file, record, genomediffs)
-    print '\n'
+    print('\n')
 
     dNdS_counts, dNtotal, dStotal, dNdS1, dNdS2, \
         dNdS3plus = calculate_dNdS(genomediffs)
     # print dNdS_counts
-    print "dN:", dNtotal, "  dS:", dStotal, "  dN/dS:", \
-      float(dNtotal)/float(dStotal)
-    print "dN/dS 1:", dNdS1, '\n', "dN/dS 2:", dNdS2, \
-      '\n', "dN/dS 3+:", dNdS3plus
+    print("dN:", dNtotal, "  dS:", dStotal, "  dN/dS:", \
+      float(dNtotal)/float(dStotal), sep=" ")
+    print("dN/dS 1:", dNdS1, '\n', "dN/dS 2:", dNdS2, \
+      '\n', "dN/dS 3+:", dNdS3plus, sep=" ")
 
 
 # TODO: Update for refactor
@@ -176,7 +176,7 @@ def analyticalEJB(conf, args):  # old proc5
     genomediffs = {}
     for gd_file in conf.GENOMEDIFF_FILES:
         parse_genomediff(gd_file, record, genomediffs=genomediffs)
-    print '\n'
+    print('\n')
 
     snpcounting = snpcount(genomediffs, conf.GENOMEDIFF_FILES, conf.snp_types)
 
@@ -203,7 +203,7 @@ def mutationTally(conf, args):  # old proc6
     '''number of lines mutating in this particular gene'''
     record = utils.parse_genbank(conf.REF_GENOME)
 
-    # 4327 CDS, 4397 gene
+    # 4327 CDS,` 4397 gene
     # feature types: 'rRNA', 'repeat_region', 'tRNA', 'source', 'misc_feature', 'CDS', 'gene'
     # snpcounttotal, snptypetotals = snpcount(  # shouldn't do here. do above.
     # out_fn = None
@@ -213,7 +213,7 @@ def mutationTally(conf, args):  # old proc6
     genomediffs = {}
     for gd_file in conf.GENOMEDIFF_FILES:
         parse_genomediff(gd_file, record, genomediffs=genomediffs)
-    print '\n'
+    print('\n')
 
     counts = mutated_lines_per_gene(genomediffs, conf.snp_types)  # a dict
 

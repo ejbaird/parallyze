@@ -61,10 +61,10 @@ def get_genecoordinates(record):
             total_bases['T'] += this_gene.T
     total_bases['total'] = total_bases['A'] + \
         total_bases['G'] + total_bases['C'] + total_bases['T']
-    print '\n', 'total A, G, C, T, TOTAL', total_bases['A'], \
+    print('\n', 'total A, G, C, T, TOTAL', total_bases['A'], \
         total_bases['G'], total_bases['C'], total_bases['T'], \
-        total_bases['total']
-    # print '\n', 'Reference genome list (1st 10): gene name, locus_tag, \
-        # start, stop, A, G, C, T', '\n', geneinfo[:10]
+        total_bases['total'], sep=" ")
+    # print('\n', 'Reference genome list (1st 10): gene name, locus_tag, \
+        # start, stop, A, G, C, T', '\n', geneinfo[:10], sep=' ')
     # geneinfo is now unhashable type: b/c of data restructure?
     return geneinfo, total_bases

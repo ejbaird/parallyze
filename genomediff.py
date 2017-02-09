@@ -123,11 +123,12 @@ def parse_genomediff(gd_file, gb_record, genomediffs=None):
                     gd.old_base = gb_record.seq[gd.position]
 
                     if gd.new_base == gd.old_base:
-                        print >>sys.stderr, 'WARNING: new base == old base', \
-                            gd.snp_type, 'problem with reference or indexing'
+                        print('WARNING: new base == old base' , \
+                            gd.snp_type, ' problem with reference or indexing', \
+                            file=sys.stderr)
 
                 else:
-                    print >>sys.stderr, 'ERROR: unrecognized SNP type', snp_type
+                    print('ERROR: unrecognized SNP type ', snp_type, file=sys.stderr)
 
             elif mut_type == 'SUB':
 

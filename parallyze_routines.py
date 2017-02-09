@@ -21,6 +21,7 @@ import random
 import utils
 import itertools
 from pprint import pprint
+from functools import reduce
 
 
 def fileName(args):
@@ -51,7 +52,7 @@ def calculate_dNdS(genomediffs):
     loci2 = 0
     loci3plus = 0
 
-    for mut_id, gd in genomediffs.iteritems():
+    for mut_id, gd in genomediffs.items():
         if gd.mut_type == 'SNP' and \
                 gd.snp_type in ['synonymous', 'nonsynonymous']:
                 # These all only have one locus_tag, and we can't
@@ -72,7 +73,7 @@ def calculate_dNdS(genomediffs):
 
             counts[locus_tag] = (dN, dS)
 
-    for locusTag, dnds in counts.iteritems():
+    for locusTag, dnds in counts.items():
         # # # if sum of tuple of dN and dS per locus tag =1,...etc.
         if dnds[0] + dnds[1] == 1:
             dN1 += dnds[0]
@@ -91,24 +92,24 @@ def calculate_dNdS(genomediffs):
         dNdS1 = float(dN1) / float(dS1)
     except ZeroDivisionError:
         dNdS1 = dN1
-        print "dS for singly mutating loci is 0. dN=", dN1
+        print("dS for singly mutating loci is 0. dN=", dN1)
         # pseudocount: assume dS=1 to allow for math
 
     try:
         dNdS2 = float(dN2) / float(dS2)
     except ZeroDivisionError:
         dNdS2 = dN2
-        print "dS for doubly mutating loci is 0. dN=", dN2
+        print("dS for doubly mutating loci is 0. dN=", dN2)
 
     try:
         dNdS3plus = float(dN3plus) / float(dS3plus)
     except ZeroDivisionError:
-        print "dS for triply or more mutating loci is 0. dN=", dN3plus
+        print("dS for triply or more mutating loci is 0. dN=", dN3plus)
         dNdS3plus = dN3plus
 
-    print "loci with 1 mutation:", loci1
-    print "loci with 2 mutations:", loci2
-    print "loci with 3 or more mutations:", loci3plus
+    print("loci with 1 mutation:", loci1)
+    print("loci with 2 mutations:", loci2)
+    print("loci with 3 or more mutations:", loci3plus)
 
     return counts, dNtotal, dStotal, dNdS1, dNdS2, dNdS3plus
 
@@ -125,11 +126,11 @@ def snpcount(genomediffs, lines, snp_types):
 
     file_matrices = {}
     snp_type_counts = {snp_types}
-    print snp_type_counts
+    print(snp_type_counts)
     for line in lines:
         file_matrices[line] = np.zeros((4, 4), dtype=int)
 
-    for key, gd in genomediffs.iteritems():
+    for key, gd in genomediffs.items():
         if gd.mut_type == 'SNP' and gd.snp_type in snp_types:
             old_base = utils.seq_to_int(gd.old_base)
             new_base = utils.seq_to_int(gd.new_base)
@@ -139,9 +140,9 @@ def snpcount(genomediffs, lines, snp_types):
             # do i need to set each snp type count to 0?
             snp_type_counts[gd.snp_type] += 1
 
-    for line, mat in file_matrices.iteritems():
-        print 'file:', line
-        print 'from (row) / to (column) :', '\n', mat, '\n'
+    for line, mat in file_matrices.items():
+        print('file:', line)
+        print('from (row) / to (column) :', '\n', mat, '\n')
 
     return file_matrices, snp_type_counts  # updated to old procs?
 
@@ -157,7 +158,7 @@ def mutated_lines_per_gene(genomediffs, snp_types):
     '''
     tag_lines = {}
 
-    for key, gd in genomediffs.iteritems():
+    for key, gd in genomediffs.items():
         if gd.mut_type == 'SNP' and gd.snp_type in snp_types:
             tag = tuple(gd.locus_tag)
             if tag not in tag_lines:
@@ -166,7 +167,7 @@ def mutated_lines_per_gene(genomediffs, snp_types):
             tag_lines[tag]['genes'].add(tuple(gd.gene_name))
             tag_lines[tag]['gene_product'].add(tuple(gd.gene_product))
 
-    sorted_tag_lines = zip(tag_lines.keys(), tag_lines.values())
+    sorted_tag_lines = list(zip(list(tag_lines.keys()), list(tag_lines.values())))
     sorted_tag_lines = sorted(sorted_tag_lines,
                               key=lambda x: len(x[1]['lines']), reverse=True)
 
@@ -226,10 +227,10 @@ def get_mut_sites(matrices, refseq, num_replicates):
     mut_sites = {}
     refseq_arr = np.array([c for c in refseq])
     for filename in matrices:
-        print '\n** generating mutation sites for', filename
+        print('\n** generating mutation sites for', filename)
         mut_sites[filename] = snpmutate(matrices[filename],
                                         num_replicates, refseq_arr)
-    print
+    print()
     '''
     mut_sites = { 'filename1': { 'A': array(row for reps, columns
         for mut position indices),
@@ -256,7 +257,7 @@ def SNPsToAlignment(conf):
     conf.GENOMEDIFF_FILES.sort()  # # So I can assume the diffs are sorted.
     for gd_file in conf.GENOMEDIFF_FILES:
         gd_dict = parse_genomediff(gd_file, ref_record)
-        for k, v in gd_dict.iteritems():
+        for k, v in gd_dict.items():
             if v.mut_type != 'SNP':  # # only consider SNPs
                 continue
    
@@ -406,7 +407,7 @@ def BasicSNPCount(conf):
     ref_record = utils.parse_genbank(conf.REF_GENOME)
     for gd_file in conf.GENOMEDIFF_FILES:
         gd_dict = parse_genomediff(gd_file, ref_record)
-        for k, v in gd_dict.iteritems():
+        for k, v in gd_dict.items():
             if v.mut_type != 'SNP':  # # only consider SNPs,
                 continue
             if v.snp_type == 'nonsynonymous':  # and those in genes.
@@ -444,7 +445,7 @@ def Statisticulate(conf, snptotal, tree_and_annotation=None, reps=1000):
         nonsynonymous_mutations = {}
         for gd_file in conf.GENOMEDIFF_FILES:
             gd_dict = parse_genomediff(gd_file, ref_record)
-            for mut_id, gd in gd_dict.iteritems():
+            for mut_id, gd in gd_dict.items():
                 if gd.mut_type == 'SNP' and gd.snp_type == 'nonsynonymous':
                     # These all only have one locus_tag, and we can't
                     # use a list as a key, so just get the value
@@ -472,7 +473,7 @@ def Statisticulate(conf, snptotal, tree_and_annotation=None, reps=1000):
 
     # # How many times does a dN occur in the gene?
     pval_numerator = {k: 0 for k in nonsynonymous_mutations}
-    genes, cdf = formGenomeCDF(ref_record, nonsynonymous_mutations.keys())
+    genes, cdf = formGenomeCDF(ref_record, list(nonsynonymous_mutations.keys()))
     for replicate in range(reps):
         for m in range(snptotal):
             nulldist = {k: 0 for k in nonsynonymous_mutations}
@@ -486,9 +487,9 @@ def Statisticulate(conf, snptotal, tree_and_annotation=None, reps=1000):
         for g in nulldist:
             if nulldist[g] >= nonsynonymous_mutations[g]:
                 pval_numerator[g] = pval_numerator[g] + 1
-    pvals = {k: float(v) / float(reps) for k, v in pval_numerator.iteritems()}
-    for k, v in pvals.iteritems():
-        print "locus_tag:", k, "p-value:", v
+    pvals = {k: float(v) / float(reps) for k, v in pval_numerator.items()}
+    for k, v in pvals.items():
+        print("locus_tag:", k, "p-value:", v)
 
 # def cleanup(): ## remove temp folder with inputs, and recreate it empty.
     # # THIS FUNCTION DOES NOT WORK RIGHT NOW
@@ -579,10 +580,10 @@ def pickWindows(conf, windows2):
 def printWindows(markers):
     # # print the ranges that are most informative.
     for i, m in enumerate(markers):
-        print "MARKER", i+1, ":"
+        print("MARKER", i+1, ":")
         for mut in m:
-            print mut.fname, mut.position, mut.old_base, \
-                mut.new_base, mut.gene_name
+            print(mut.fname, mut.position, mut.old_base, \
+                mut.new_base, mut.gene_name)
 
 
 # TODO: Update for refactor

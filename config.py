@@ -64,8 +64,8 @@ class SimpleConfig(object):
             key, value = (yield)
             value = self.convert_value(key, value)
 
-            print '{k} : {v}'.format(k=key, v='\n'.join(value)
-                                     if isinstance(value, list) else value)
+            print('{k} : {v}'.format(k=key, v='\n'.join(value)
+                                     if isinstance(value, list) else value))
 
             setattr(self, key, value)
 
